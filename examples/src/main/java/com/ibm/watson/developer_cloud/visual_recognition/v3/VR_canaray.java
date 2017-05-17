@@ -17,12 +17,19 @@ import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassifi
 public class VR_canaray {
 
   public static void main(String[] args) {
-    VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
+    
+	VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
     service.setApiKey("caa6385d06cc80c1e01694a8a1e85342383a1cc0");
 
     System.out.println("Classify an image");
+    ClassifyImagesOptions options = new ClassifyImagesOptions.Builder()
+    	    .images(new File("C:/Users/specsy/Documents/GitHub/WatsonAPI/java-sdk/visual-recognition/src/test/resources/Test/image001.intracranial.png"))
+    	    .build();
+    	VisualClassification result = service.classify(options).execute();
+    	System.out.println(result);
     
-    ClassifyImagesOptions option_classify = 
+    
+/*    ClassifyImagesOptions option_classify = 
     		new ClassifyImagesOptions.Builder().images(new File("C:/Users/specsy/Documents/GitHub/WatsonAPI/java-sdk/visual-recognition/src/test/resources/Test/image001.intracranial.png")).build();
     VisualClassification option_result = service.classify(option_classify).execute();
     System.out.println(option_result);
@@ -46,7 +53,7 @@ public class VR_canaray {
     ClassifierOptions updateOptions = new ClassifierOptions.Builder()
         .addClass("Intracranial", new File("C:/Users/specsy/Documents/GitHub/WatsonAPI/java-sdk/visual-recognition/src/test/resources/Test/intracranial_calcification.zip")).build();
     VisualClassifier updatedIntracranial = service.updateClassifier(Intracranial.getId(), updateOptions).execute();
-    System.out.println(updatedIntracranial);
+    System.out.println(updatedIntracranial);*/
 
   }
 }

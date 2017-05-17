@@ -154,6 +154,7 @@ public abstract class WatsonService {
    * @param converter the converter
    * @return the service call
    */
+  
   protected final <T> ServiceCall<T> createServiceCall(final Request request, final ResponseConverter<T> converter) {
     final Call call = createCall(request);
     return new ServiceCall<T>() {

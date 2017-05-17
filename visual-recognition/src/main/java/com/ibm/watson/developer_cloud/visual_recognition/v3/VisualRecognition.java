@@ -102,6 +102,7 @@ public class VisualRecognition extends WatsonService {
    * @param versionDate The version date (yyyy-MM-dd) of the REST API to use. Specifying this value will keep your API
    *        calls from failing when the service introduces breaking changes.
    */
+  
   public VisualRecognition(String versionDate) {
     super(SERVICE_NAME);
     if ((getEndPoint() == null) || getEndPoint().isEmpty()) {
