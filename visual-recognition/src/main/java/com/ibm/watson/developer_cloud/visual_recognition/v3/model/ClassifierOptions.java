@@ -44,6 +44,7 @@ public class ClassifierOptions {
     /**
      * Instantiates a new builder.
      */
+    
     public Builder() {
       positiveExamplesByName = new HashMap<String, File>();
     }
