@@ -23,32 +23,32 @@ public class VisualRecognitionExample {
 
   public static void main(String[] args) {
     VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
-    service.setApiKey("<api-key>");
+    service.setApiKey("caa6385d06cc80c1e01694a8a1e85342383a1cc0");
 
     System.out.println("Classify an image");
     ClassifyImagesOptions options =
-        new ClassifyImagesOptions.Builder().images(new File("src/test/resources/visual_recognition/car.png")).build();
+        new ClassifyImagesOptions.Builder().images(new File("C:/Users/specsy/Desktop/IBM-Watson/fruitbowl.jpg")).build();
     VisualClassification result = service.classify(options).execute();
     System.out.println(result);
 
 
     System.out.println("Create a classifier with positive and negative images");
     ClassifierOptions createOptions = new ClassifierOptions.Builder().classifierName("foo")
-        .addClass("car", new File("src/test/resources/visual_recognition/car_positive.zip"))
-        .addClass("baseball", new File("src/test/resources/visual_recognition/baseball_positive.zip"))
-        .negativeExamples(new File("src/test/resources/visual_recognition/negative.zip")).build();
+        .addClass("car", new File("C:/Users/specsy/Desktop/ai_training/ai_training/intracranial_calcification.zip"))
+        .addClass("baseball", new File("C:/Users/specsy/Desktop/ai_training/ai_training/intracranial_calcification.zip"))
+        .negativeExamples(new File("C:/Users/specsy/Desktop/ai_training/ai_training/intracranial_calcification.zip")).build();
     VisualClassifier foo = service.createClassifier(createOptions).execute();
     System.out.println(foo);
 
     System.out.println("Classify using the 'Car' classifier");
-    options = new ClassifyImagesOptions.Builder().images(new File("src/test/resources/visual_recognition/car.png"))
+    options = new ClassifyImagesOptions.Builder().images(new File("C:/Users/specsy/Desktop/IBM-Watson/fruitbowl.jpg"))
         .classifierIds("car").build();
     result = service.classify(options).execute();
     System.out.println(result);
 
     System.out.println("Update a classifier with more positive images");
     ClassifierOptions updateOptions = new ClassifierOptions.Builder()
-        .addClass("car", new File("src/test/resources/visual_recognition/car_positive.zip")).build();
+        .addClass("car", new File("C:/Users/specsy/Desktop/ai_training/ai_training/intracranial_calcification.zip")).build();
     VisualClassifier updatedFoo = service.updateClassifier(foo.getId(), updateOptions).execute();
     System.out.println(updatedFoo);
 
