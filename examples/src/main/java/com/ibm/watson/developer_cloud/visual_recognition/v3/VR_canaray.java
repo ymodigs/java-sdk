@@ -7,52 +7,130 @@
  */
 package com.ibm.watson.developer_cloud.visual_recognition.v3;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifierOptions;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifierOptions.Builder;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyImagesOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassification;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassifier;
 
 public class VR_canaray {
+	
+	public static String myFilePath = "C:/Users/specsy/Documents/GitHub/WatsonAPI/java-sdk/visual-recognition/src/test/resources/Test/TEST-zip/";
+	public static String classifierID = null;
+	
+	static VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
+	public static VisualClassifier result = null;
+	
+	static void createCustomClassifier() throws Exception
+	{
+		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+		System.out.print("Enter the path:");
+		String path = br.readLine();
+		File f = new File(path);
+		ArrayList<File> files = new ArrayList<File>(Arrays.asList(f.listFiles()));
 
-  public static void main(String[] args) {
-	  
-	  
-	String myFilePath = "C:/Users/specsy/Documents/GitHub/WatsonAPI/java-sdk/visual-recognition/src/test/resources/Test/TEST-zip/";
-	String classifierID ="Canaray_1432151802";
-    
-	VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
-    service.setApiKey("caa6385d06cc80c1e01694a8a1e85342383a1cc0");
-    
-    
+		List<File> allZipPath = new ArrayList<File>();
 
-    /* Make your own Classifier */
-/*    System.out.println("Create a Canaray classifier with positive and negative images");
-    ClassifierOptions createCanaryOptions = new ClassifierOptions.Builder().classifierName("Canaray")
-    		// className , File mandatory parameters
-    		.addClass("Calcified Stylohyoid ligaments", new File(myFilePath + "T_calcified_stylohyoid_ligaments.zip"))
-    		.addClass("Pneumatocyst", new File(myFilePath +"T_pneumatocyst.zip"))
-    		.addClass("Tonsilloliths", new File(myFilePath +"T_tonsilloliths.zip")).build();
-    
-     you can add negative zip by using ".negativeExamples(new File(myFilePath +"cats.zip")).build()" 
-    VisualClassifier result = service.createClassifier(createCanaryOptions).execute();
-    System.out.println(result);
-*/    
-    
-    
-    System.out.println("Classify using the new classifier which you have created 'Canaray' classifier");
-    ClassifyImagesOptions option_classify = new ClassifyImagesOptions.Builder().images(new File(myFilePath +"demo.png"))
-        .classifierIds(classifierID).build();
-    VisualClassification option_result = service.classify(option_classify).execute();
-    System.out.println(option_result);
+		for(int i=0; i<files.size();i++)
+		{
+		  if(files.get(i).getPath().endsWith(".zip"))
+		  {
+
+		    System.out.println("Files wre" + files.get(i) );
+
+		    allZipPath.add(new File(files.get(i).toString()));
+
+		  }
+
+		}
+		
+		System.out.println("Create a Canaray classifier with positive and negative images");
+   		
+		Builder classBuilder = new ClassifierOptions.Builder();
+		
+		for(int i=0; i<allZipPath.size(); i++){
+			
+			classBuilder.addClass("tt" + i , allZipPath.get(i));	
+			
+		}
+		ClassifierOptions createCanaryOptions = classBuilder.classifierName("Canary").build();
+		
+	
    
+		
+//        you can add negative zip by using ".negativeExamples(new File(myFilePath +"cats.zip")).build()" 
+	   result = service.createClassifier(createCanaryOptions).execute();
+	   System.out.println(result);
+	   
+	  while(result.getStatus().toString() =="training"){
+		  
+		  System.out.print(".");
+		  service.getClassifier(classifierId)
+		  classifierID = result.getId().toString();
+	  }
+		  
+		
+	}
+	
+	
+	
+	public static void main(String[] args) throws Exception{
+	  
+		service.setApiKey("caa6385d06cc80c1e01694a8a1e85342383a1cc0");
+		
+
+    /* Make your own Custom Classifier
+     * In this case(Free API) --> created Canaray named classifier
+     * Data requirement -->  Classifier --> up to 5000 iamges
+     * Classes --> zip size upto 5MB only
+     * Recommendation --> In each class put 50 images
+     *  */
+	createCustomClassifier();
+	
+	
+    
+    
+    
+    /*  Classify image in your Classifier */
+	
+	
+	    System.out.println("Classify using the new classifier which you have created 'Canaray' classifier");
+	    while(classifierID==null || result.getStatus().toString() =="training"){System.out.print("processing...");}
+	    ClassifyImagesOptions option_classify = new ClassifyImagesOptions.Builder().images(new File(myFilePath +"report_finding.image.9c276f4ba9de0835.33333933372e706e67.png"))
+	        .classifierIds(classifierID).build();
+	    VisualClassification option_result = service.classify(option_classify).execute();
+	    System.out.println(option_result);
+	    
+	    
+	   
+	  
+    
+    
+    /* Update Classifier */
+    
+    
+    
+    /* Delete Classifier */
+	    
     
     
     
     
-    /* Choose your Image */
-/*	  System.out.println("Classify an image");
+    
+	    
+	    
+	    /* Choose your Image --> By default it will check from default classifier 
+     * You need to check from your custom classifier 
+     * In this case Free API - You can just create one Custom classifier
+     * */
+    /*	  System.out.println("Classify an image");
 	  ClassifyImagesOptions options = new ClassifyImagesOptions.Builder()
 	  	    .images(new File(myFilePath + "demo.png"))
 	  	    .build();
