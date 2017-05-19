@@ -40,10 +40,10 @@ public class VR_canaray {
 
 		for(int i=0; i<files.size();i++)
 		{
+			
 		  if(files.get(i).getPath().endsWith(".zip"))
-		  {
-
-		    System.out.println("Files wre" + files.get(i) );
+		  {  
+		    System.out.println("Files are " + files.get(i));
 
 		    allZipPath.add(new File(files.get(i).toString()));
 
@@ -56,30 +56,37 @@ public class VR_canaray {
 		Builder classBuilder = new ClassifierOptions.Builder();
 		
 		for(int i=0; i<allZipPath.size(); i++){
-			
-			classBuilder.addClass("tt" + i , allZipPath.get(i));	
-			
+			//Take the name and add as a name to the class
+			classBuilder.addClass(allZipPath.get(i).getName().substring(0, allZipPath.get(i).getName().indexOf('.')) , allZipPath.get(i));	
 		}
 		ClassifierOptions createCanaryOptions = classBuilder.classifierName("Canary").build();
 		
-	
-   
-		
 //        you can add negative zip by using ".negativeExamples(new File(myFilePath +"cats.zip")).build()" 
-	   result = service.createClassifier(createCanaryOptions).execute();
-	   System.out.println(result);
+		result = service.createClassifier(createCanaryOptions).execute();
+		System.out.println(result);
 	   
-	  while(result.getStatus().toString() =="training"){
+	/*  while(result.getStatus().toString() =="training"){
 		  
 		  System.out.print(".");
 		  service.getClassifier(classifierId)
 		  classifierID = result.getId().toString();
-	  }
+	  }*/
 		  
 		
 	}
 	
 	
+
+	static void classifyYourImage(){
+		
+		 System.out.println("Classify using the new classifier which you have created 'Canaray' classifier");
+		  /*  while(classifierID==null || result.getStatus().toString() =="training"){System.out.print("processing...");}*/
+		    ClassifyImagesOptions option_classify = new ClassifyImagesOptions.Builder().images(new File(myFilePath +"report_finding.image.9c276f4ba9de0835.33333933372e706e67.png"))
+		        .classifierIds(classifierID).build();
+		    VisualClassification option_result = service.classify(option_classify).execute();
+		    System.out.println(option_result);
+		
+	}
 	
 	public static void main(String[] args) throws Exception{
 	  
@@ -100,16 +107,10 @@ public class VR_canaray {
     
     /*  Classify image in your Classifier */
 	
+//		classifyYourImage();
 	
-	    System.out.println("Classify using the new classifier which you have created 'Canaray' classifier");
-	    while(classifierID==null || result.getStatus().toString() =="training"){System.out.print("processing...");}
-	    ClassifyImagesOptions option_classify = new ClassifyImagesOptions.Builder().images(new File(myFilePath +"report_finding.image.9c276f4ba9de0835.33333933372e706e67.png"))
-	        .classifierIds(classifierID).build();
-	    VisualClassification option_result = service.classify(option_classify).execute();
-	    System.out.println(option_result);
-	    
-	    
-	   
+	
+
 	  
     
     
