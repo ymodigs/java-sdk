@@ -7,12 +7,18 @@
  */
 package com.ibm.watson.developer_cloud.visual_recognition.v3;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifierOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifierOptions.Builder;
@@ -28,16 +34,27 @@ public class VR_canaray {
 	static VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
 	public static VisualClassifier result = null;
 	
+	
+	
+	
 	static void createCustomClassifier() throws Exception
 	{
 		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
 		System.out.print("Enter the path:");
 		String path = br.readLine();
 		File f = new File(path);
+		
 		ArrayList<File> files = new ArrayList<File>(Arrays.asList(f.listFiles()));
 
 		List<File> allZipPath = new ArrayList<File>();
 
+		 for (  File file : files) {
+		    	if(file.isDirectory())
+		    	{
+		    		makeZip(file.getPath(), file.getParent() + "//" +  file.getName() +  ".zip");
+		    	}
+		    }
+		 
 		for(int i=0; i<files.size();i++)
 		{
 			
@@ -88,6 +105,121 @@ public class VR_canaray {
 		
 	}
 	
+	
+	public static void makeZip(String path,String outputFile)
+    {
+		
+		System.out.println("Hey now I will convert into zip");
+        final int BUFFER = 2048;
+        boolean isEntry = false;
+        ArrayList<String> directoryList = new ArrayList<String>();
+        File f = new File(path);
+        if(f.exists())
+        {
+        try {
+                FileOutputStream fos = new FileOutputStream(outputFile);
+                ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(fos));
+                byte data[] = new byte[BUFFER];
+
+                if(f.isDirectory())
+                {
+                   //This is Directory
+                    do{
+                        String directoryName = "";
+                        if(directoryList.size() > 0)
+                        {
+                            directoryName = directoryList.get(0);
+                            System.out.println("Directory Name At 0 :"+directoryName);
+                        }
+                        String fullPath = path+directoryName;
+                        File fileList = null;
+                        if(directoryList.size() == 0)
+                        {
+                            //Main path (Root Directory)
+                            fileList = f;
+                        }else
+                        {
+                            //Child Directory
+                            fileList = new File(fullPath);
+                        }
+                        String[] filesName = fileList.list();
+
+                        int totalFiles = filesName.length;
+                        for(int i = 0 ; i < totalFiles ; i++)
+                        {
+                            String name = filesName[i];
+                            File filesOrDir = new File(fullPath+ "\\" + name);
+                            if(filesOrDir.isDirectory())
+                            {
+                                //System.out.println("New Directory Entry :"+directoryName+name+"/");
+                                ZipEntry entry = new ZipEntry(directoryName+name+"/");
+                                zos.putNextEntry(entry);
+                                isEntry = true;
+                                directoryList.add(directoryName+name+"/");
+                            }else
+                            {
+                                //System.out.println("New File Entry :"+directoryName+name);
+                                ZipEntry entry = new ZipEntry(directoryName+name);
+                                zos.putNextEntry(entry);
+                                isEntry = true;
+                                FileInputStream fileInputStream = new FileInputStream(filesOrDir);
+                                BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream, BUFFER);
+                                int size = -1;
+                                while(  (size = bufferedInputStream.read(data, 0, BUFFER)) != -1  )
+                                {
+                                    zos.write(data, 0, size);
+                                }
+                                bufferedInputStream.close();
+                            }
+                        }
+                        if(directoryList.size() > 0 && directoryName.trim().length() > 0)
+                        {
+                            System.out.println("Directory removed :"+directoryName);
+                            directoryList.remove(0);
+                        }
+
+                    }while(directoryList.size() > 0);
+                    
+                    System.out.println("Done with zip creation");
+                }else
+                {
+                    //This is File
+                    //Zip this file
+                	
+                	
+                    System.out.println("Zip this file :"+f.getPath());
+                    FileInputStream fis = new FileInputStream(f);
+                    BufferedInputStream bis = new BufferedInputStream(fis,BUFFER);
+                    ZipEntry entry = new ZipEntry(f.getName());
+                    zos.putNextEntry(entry);
+                    isEntry = true;
+                    int size = -1 ;
+                    while(( size = bis.read(data,0,BUFFER)) != -1)
+                    {
+                        zos.write(data, 0, size);
+                    }
+                }               
+
+                //CHECK IS THERE ANY ENTRY IN ZIP ? ----START
+                if(isEntry)
+                {
+                  zos.close();
+                }else
+                {
+                    zos = null;
+                    System.out.println("No Entry Found in Zip");
+                }
+                //CHECK IS THERE ANY ENTRY IN ZIP ? ----START
+            }catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }else
+        {
+            System.out.println("File or Directory not found");
+        }
+     }
+	
 	public static void main(String[] args) throws Exception{
 	  
 		service.setApiKey("caa6385d06cc80c1e01694a8a1e85342383a1cc0");
@@ -100,7 +232,7 @@ public class VR_canaray {
      * Recommendation --> In each class put 50 images
      *  */
 	createCustomClassifier();
-	
+	//System.out.println("Classify an image");
 	
     
     
